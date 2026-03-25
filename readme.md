@@ -35,7 +35,7 @@ The 6502 processor has six 8-bit registers, with the exception of the Program Co
 Flags
 
 Instructions that save or restore the flags map them to bits in the architectural 'P' register as follows:
-
+```
 7  bit  0
 ---- ----
 NV1B DIZC
@@ -79,4 +79,4 @@ $4018–$401F 	$0008 	APU and I/O functionality that is normally disabled. See C
 $4020–$FFFF     $BFE0   Unmapped. Available for cartridge use.
 • $6000–$7FFF   $2000   Usually cartridge RAM, when present.
 • $8000–$FFFF 	$8000   Usually cartridge ROM and mapper registers.
-
+```
