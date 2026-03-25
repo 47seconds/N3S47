@@ -64,6 +64,8 @@ n 	        0 	            unchanged
 
 ## Addressing Modes
 Addressing modes and instruction timings are the same as those in the standard 6502.
+Opcode does NOT directly give data.
+Addressing mode tells how to find the data
 
 1. Indexed Addressing: Indexed addressing modes use the X or Y register to help determine the address. The 6502 has six main indexed addressing modes.
 2. Other addressing
