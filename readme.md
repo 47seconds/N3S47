@@ -52,7 +52,7 @@ NV1B DIZC
 Initial     At Power 	    After Reset
 A, X, Y 	0 	            unchanged
 PC 	        ($FFFC) 	    ($FFFC)
-S[1] 	    $00 - 3 = $FD 	S -= 3
+S    	    $00 - 3 = $FD 	S -= 3
 C 	        0 	            unchanged
 Z 	        0 	            unchanged
 i 	        1 	            1
