@@ -6,13 +6,13 @@ class cpu {
 private:
 
 public:
-  // registers
-  uint8_t   A;
-  uint8_t   X;
-  uint8_t   Y;
-  uint8_t   P;
-  uint8_t   SP;
-  uint16_t  PC;
+  // registers (8-bit, except PC)
+  uint8_t   A   = 0x00;
+  uint8_t   X   = 0x00;
+  uint8_t   Y   = 0x00;
+  uint8_t   P   = 0x00;
+  uint8_t   SP  = 0x00;
+  uint16_t  PC  = 0x0000;
 
   // P register flags
   enum P_FLAGS {
