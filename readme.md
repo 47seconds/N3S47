@@ -49,6 +49,7 @@ NV1B DIZC
 |+-------- Overflow
 +--------- Negative
 
+
 Initial     At Power 	    After Reset
 A, X, Y 	0 	            unchanged
 PC 	        ($FFFC) 	    ($FFFC)
@@ -59,6 +60,7 @@ i 	        1 	            1
 d 	        0 	            unchanged 
 v 	        0 	            unchanged
 n 	        0 	            unchanged
+```
 
 ## Addressing Modes
 Addressing modes and instruction timings are the same as those in the standard 6502.
@@ -67,6 +69,7 @@ Addressing modes and instruction timings are the same as those in the standard 6
 2. Other addressing
 
 ## Memory Map
+```
 Address range 	Size 	Device
 $0000–$07FF 	$0800 	2 KB internal RAM
 $0800–$0FFF 	$0800 	Mirrors of $0000–$07FF
