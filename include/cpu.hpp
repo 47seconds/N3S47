@@ -48,11 +48,16 @@ public:
   uint8_t   cycles       = 0x00;
   uint64_t  global_cycle = 0x00000000;
 
+  // fetching values
+  uint8_t   fetched_val  = 0x00;
+
 private:
 
 public:
   CPU();
   ~CPU();
+
+  uint8_t fetch();
 
   // Addressing modes and instruction functions return 0 or 1 indicating whether an extra CPU cycle is required.
   // addressing modes
