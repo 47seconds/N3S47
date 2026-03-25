@@ -85,3 +85,10 @@ $4020–$FFFF     $BFE0   Unmapped. Available for cartridge use.
 • $6000–$7FFF   $2000   Usually cartridge RAM, when present.
 • $8000–$FFFF 	$8000   Usually cartridge ROM and mapper registers.
 ```
+
+## Workflow
+
+1. Fetch opcode
+2. Decode
+3. Addressing Mode (get operand/s)
+4. Execute instruction
