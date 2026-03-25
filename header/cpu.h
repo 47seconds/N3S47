@@ -15,7 +15,11 @@ public:
   uint16_t  PC  = 0xFFFC;
 
   // P register flags
-  // 00100100 at starting
+  // bit masking:
+  // Flag	Bit	Value
+  // C	0	00000001
+  // Z	1	00000010
+  // ...
   enum P_FLAGS {
     C = (1 << 0), // carry
     Z = (1 << 1), // zero
