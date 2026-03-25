@@ -36,15 +36,15 @@ public:
   // 1. Indexed
   void ZPX(); // Zero page indexed: d, x
   void ZPY(); // Zero page indexed: d, y
-  void ABX();  // Absolute indexed: a, x
-  void ABY();  // Absolute indexed: a, y
+  void ABX(); // Absolute indexed: a, x
+  void ABY(); // Absolute indexed: a, y
   void IIX(); // Indexed indirect: (d, x)
   void IIY(); // Indirect indexed: (d), y
   //2. Others
   void IMP(); // Implicit
   void ACC(); // Accumulator
   void IMM(); // Immediate
-  void ZP();  // Zero Page
+  void ZP_(); // Zero Page
   void ABS(); // Absolute
   void REL(); // Relative
   void IND(); // Indirect
