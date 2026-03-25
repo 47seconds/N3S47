@@ -1,7 +1,7 @@
 The NES Emulation in C++ by 47seconds
 
 # CPU
-NES CPU is implemented on 6502 based 8-bit processor, with 16-bit addressing (0x0000 → 0xFFFF, each address store 1 byte (8-bit) data, 64 KB memory)
+NES CPU is implemented on 6502 based 8-bit processor, with 16-bit addressing (0x0000 → 0xFFFF, each address store 1 byte (8-bit) data, 64 KB memory) and is little endian
 
 ## Instruction codes and opcodes
 The 6502 has 56 of instruction including instructions for operations such as addition, subtraction, AND, OR, ROR, etc.
@@ -65,3 +65,18 @@ Addressing modes and instruction timings are the same as those in the standard 6
 
 1. Indexed Addressing: Indexed addressing modes use the X or Y register to help determine the address. The 6502 has six main indexed addressing modes.
 2. Other addressing
+
+## Memory Map
+Address range 	Size 	Device
+$0000–$07FF 	$0800 	2 KB internal RAM
+$0800–$0FFF 	$0800 	Mirrors of $0000–$07FF
+$1000–$17FF 	$0800
+$1800–$1FFF 	$0800
+$2000–$2007 	$0008 	NES PPU registers
+$2008–$3FFF 	$1FF8 	Mirrors of $2000–$2007 (repeats every 8 bytes)
+$4000–$4017 	$0018 	NES APU and I/O registers
+$4018–$401F 	$0008 	APU and I/O functionality that is normally disabled. See CPU Test Mode.
+$4020–$FFFF     $BFE0   Unmapped. Available for cartridge use.
+• $6000–$7FFF   $2000   Usually cartridge RAM, when present.
+• $8000–$FFFF 	$8000   Usually cartridge ROM and mapper registers.
+
