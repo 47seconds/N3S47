@@ -39,8 +39,7 @@ public:
   cpu();
   ~cpu();
 
-  // Every function/instruction should return in uint8_t (1 byte), returning the number of cpu cycles they need to execute the instruction
-
+  // Every function/instruction should return in uint8_t (1 byte), returning if they need extra cycle conditionally
   // addressing modes
   // 1. Indexed
   uint8_t ZPX(); // Zero page indexed: d, x
