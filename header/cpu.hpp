@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-class cpu {
+class CPU {
 private:
 
   // Instruction holding name, function pointer, address mode (function) pointer it operates on, and number of cycles this instruction needs to complete
