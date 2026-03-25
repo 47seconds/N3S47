@@ -7,8 +7,8 @@ NES CPU is implemented on 6502 based 8-bit processor, with 16-bit addressing (0x
 The 6502 has 56 of instruction including instructions for operations such as addition, subtraction, AND, OR, ROR, etc.
 The 6502 processor has a total of 256 possible opcodes, but only 151 were used originally, arranged into 56 instructions which the NES used.
 
-Instruction = meaning
-Opcode = binary representation
+Instruction = method (function)
+Opcode = binary representation (a binary code/index for that instruction)
 
 Instruction	    LDA #$10	Load value 0x10 into register A
 Opcode	        0xA9	    Binary code CPU actually reads
