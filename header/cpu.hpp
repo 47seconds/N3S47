@@ -42,10 +42,11 @@ public:
   };
 
   // global shared variables
-  uint16_t  abs_addr = 0x0000;
-  uint16_t  rel_addr = 0x0000; 
-  uint8_t   opcode   = 0x00;
-  uint8_t   cycles   = 0x00;
+  uint16_t  abs_addr     = 0x0000;
+  uint16_t  rel_addr     = 0x0000; 
+  uint8_t   opcode       = 0x00;
+  uint8_t   cycles       = 0x00;
+  uint64_t  global_cycle = 0x00000000;
 
 private:
 
