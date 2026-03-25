@@ -32,7 +32,7 @@ The 6502 processor has six 8-bit registers, with the exception of the Program Co
 5. Stack Pointer(SP) - The stack pointer hold the address to the current location on the Stack. The stack is a way to store data by pushing or popping data to and from a section of memory.
 6. Program Counter(PC) - This is a 16-bit register unlike other registers which are only 8-bit in length, it indicates where the processor is in the program sequence.
 
-Flags
+## Flags
 
 Instructions that save or restore the flags map them to bits in the architectural 'P' register as follows:
 ```
