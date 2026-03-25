@@ -5,6 +5,14 @@
 class cpu {
 private:
 
+  // Instruction holding name, function pointer, address mode (function) pointer it operates on, and number of cycles this instruction needs to complete
+  struct Instruction {
+    const char* name;
+    uint8_t     (cpu::*operate)(void);
+    uint8_t     (cpu::*addrmode)(void);
+    uint8_t     cycles;
+  };
+
 public:
   // registers (8-bit, except PC)
   uint8_t   A   = 0x00;
