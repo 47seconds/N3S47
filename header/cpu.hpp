@@ -8,8 +8,8 @@ private:
   // Instruction holding name, function pointer, address mode (function) pointer it operates on, and number of cycles this instruction needs to complete
   struct Instruction {
     const char* name;
-    uint8_t     (cpu::*operate)(void);
-    uint8_t     (cpu::*addrmode)(void);
+    uint8_t     (CPU::*operate)(void);
+    uint8_t     (CPU::*addrmode)(void);
     uint8_t     cycles;
   };
 
@@ -51,8 +51,8 @@ public:
 private:
 
 public:
-  cpu();
-  ~cpu();
+  CPU();
+  ~CPU();
 
   // Addressing modes and instruction functions return 0 or 1 indicating whether an extra CPU cycle is required.
   // addressing modes
