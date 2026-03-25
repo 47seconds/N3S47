@@ -1,7 +1,7 @@
 The NES Emulation in C++ by 47seconds
 
 # CPU
-NES CPU is implemented on 6502 based 8-bit processor, with 16-bit addressing (0x0000 → 0xFFFF, 64 KB memory)
+NES CPU is implemented on 6502 based 8-bit processor, with 16-bit addressing (0x0000 → 0xFFFF, each address store 1 byte (8-bit) data, 64 KB memory)
 
 ## Instruction codes and opcodes
 The 6502 has 56 of instruction including instructions for operations such as addition, subtraction, AND, OR, ROR, etc.
@@ -48,6 +48,17 @@ NV1B DIZC
 ||+------- (No CPU effect; always pushed as 1)
 |+-------- Overflow
 +--------- Negative
+
+Initial     At Power 	    After Reset
+A, X, Y 	0 	            unchanged
+PC 	        ($FFFC) 	    ($FFFC)
+S[1] 	    $00 - 3 = $FD 	S -= 3
+C 	        0 	            unchanged
+Z 	        0 	            unchanged
+i 	        1 	            1
+d 	        0 	            unchanged 
+v 	        0 	            unchanged
+n 	        0 	            unchanged
 
 ## Addressing Modes
 Addressing modes and instruction timings are the same as those in the standard 6502.
