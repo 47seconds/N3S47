@@ -41,13 +41,19 @@ public:
     N = (1 << 7), // negative
   };
 
+  // global shared variables
+  uint16_t  abs_addr = 0x0000;
+  uint16_t  rel_addr = 0x0000; 
+  uint8_t   opcode   = 0x00;
+  uint8_t   cycles   = 0x00;
+
 private:
 
 public:
   cpu();
   ~cpu();
 
-  // Every function/instruction should return in uint8_t (1 byte), returning if they need extra cycle conditionally
+  // Addressing modes and instruction functions return 0 or 1 indicating whether an extra CPU cycle is required.
   // addressing modes
   // 1. Indexed
   uint8_t ZPX(); // Zero page indexed: d, x
