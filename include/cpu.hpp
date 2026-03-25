@@ -52,6 +52,7 @@ public:
   uint8_t   fetched_val  = 0x00;
 
 private:
+  void setFlag(P_FLAGS f, bool cond);
 
 public:
   CPU();

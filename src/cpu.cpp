@@ -1,6 +1,11 @@
 #include "../include/cpu.hpp"
 #include <cstdint>
 
+void CPU::setFlag(P_FLAGS f, bool cond) {
+  if (cond) P |= f;
+  else P &= ~f;
+}
+
 uint8_t CPU::ADC() {
   /*
     This instruction adds the contents of a memory location to the accumulator together with the carry bit. If overflow occurs the carry bit is set, this enables multiple byte addition to be performed.
@@ -20,22 +25,19 @@ uint8_t CPU::ADC() {
   uint16_t sum = (uint16_t)A + (uint16_t)fetched_val + (P & C ? 1 : 0);
 
   // if res > uint8_t size, set carry bit, else set it to 0
-  if (sum > 0xFF) P |= C; // Set carry bit in P (since C is already 1 in struct)
-  else P &= ~C;
+  setFlag(C, sum > 0xFF); // Set carry bit in P (since C is already 1 in struct)
 
   uint8_t res = sum & 0xFF; // can use (uint8_t)sum, but conversion -> compiler decides, while rn we mark explicitly
 
   // set zero bit, if applicable
-  if (!res) P |= Z;
-  else P &= ~Z;
+  setFlag(Z, !res);
 
   // set negative if last bit is set (Xxxxxxxx & 10000000 (0x80))
-  if (res & 0x80) P |= N;
-  else P &= ~N;
+  setFlag(N, res & 0x80);
 
   // set overflow if A and operand has same sign, but res has different -> overflow
-  if (((~(A ^ fetched_val)) & (A ^ res)) & 0x80) P |= V;
-  else P &= ~V;
+  bool cond = ((~(A ^ fetched_val)) & (A ^ res)) & 0x80;
+  setFlag(V, cond);
 
   A = res;
 
@@ -45,11 +47,9 @@ uint8_t CPU::ADC() {
 uint8_t CPU::AND() {
   uint8_t res = A & fetched_val;
 
-  if (!res) P |= Z;
-  else P &= ~Z;
+  setFlag(Z, !res);
 
-  if (res & 0x80) P |= N;
-  else P &= ~N;
+  setFlag(N, res & 0x80);
 
   A = res;
 
