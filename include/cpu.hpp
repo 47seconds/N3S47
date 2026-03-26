@@ -55,6 +55,7 @@ public:
 
 private:
   void setFlag(P_FLAGS f, bool cond);
+  uint8_t getFlag(P_FLAGS f);
 
 public:
   CPU();

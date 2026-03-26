@@ -30,6 +30,10 @@ void CPU::setFlag(P_FLAGS f, bool cond) {
   else P &= ~f;
 }
 
+uint8_t CPU::getFlag(P_FLAGS f) {
+  return (P & f) ? 1 : 0;
+}
+
 // Huge Thanks
 // https://www.nesdev.org/obelisk-6502-guide/reference.html
 
@@ -98,6 +102,19 @@ uint8_t CPU::ASL() {
   return 0;
 }
 
+// Memory is divided into pages of 256 bytes
+// A page cross happens when the high byte of the address changes
 uint8_t CPU::BCC() {
+  if (!getFlag(C)) {
+    global_cycle++;
 
+    abs_addr = PC + rel_addr;
+
+    // old high bits of abs_addr (PC) and new abs_addr have changed -> page changed
+    if ((PC & 0xFF00) ^ (abs_addr & 0xFF00)) global_cycle++;
+
+    PC = abs_addr;
+  }
+
+  return 0;
 }
