@@ -1,5 +1,11 @@
 The NES Emulation in C++ by 47seconds
 
+# Resources
+Huge thanks to these resources
+- https://www.nesdev.org/obelisk-6502-guide/reference.html (GEM)
+- https://leeteng.com/blog/content/writing-nes-emulator
+- https://github.com/OneLoneCoder/olcNES
+
 # CPU
 NES CPU is implemented on 6502 based 8-bit processor, with 16-bit addressing (0x0000 → 0xFFFF, each address store 1 byte (8-bit) data, 64 KB memory) and is little endian
 
