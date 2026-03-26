@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <vector>
 
 class CPU {
 private:
@@ -60,6 +61,9 @@ public:
 
   uint8_t fetch();
 
+  // list of all opcodes (0x00 - 0xFF, 256 instructions), opcode itself corresponds to vector index
+  std::vector<Instruction> instruction_set;
+
   // Addressing modes and instruction functions return 0 or 1 indicating whether an extra CPU cycle is required.
   // addressing modes
   // 1. Indexed
@@ -67,8 +71,8 @@ public:
   uint8_t ZPY(); // Zero page indexed: d, y
   uint8_t ABX(); // Absolute indexed: a, x
   uint8_t ABY(); // Absolute indexed: a, y
-  uint8_t IIX(); // Indexed indirect: (d, x)
-  uint8_t IIY(); // Indirect indexed: (d), y
+  uint8_t IIX(); // (Indexed) indirect: (d, x)
+  uint8_t IIY(); // (Indexed) indirect: (d), y
   //2. Others
   uint8_t IMP(); // Implicit
   uint8_t ACC(); // Accumulator
@@ -136,4 +140,6 @@ public:
   uint8_t TXA();
   uint8_t TXS();
   uint8_t TYA();
+
+  uint8_t XXX();
 };
