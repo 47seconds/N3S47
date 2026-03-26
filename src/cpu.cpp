@@ -251,3 +251,146 @@ uint8_t CPU::BRK() {
 
   return 0;
 }
+
+// If the overflow flag is clear then add the relative displacement to the program counter to cause a branch to a new location.
+uint8_t CPU::BVC() {
+  if (!getFlag(V)) {
+    global_cycle++;
+
+    abs_addr = PC + rel_addr;
+
+    if ((PC & 0xFF00) ^ (abs_addr & 0xFF00)) global_cycle++;
+
+    PC = abs_addr;
+  }
+
+  return 0;
+}
+
+// If the overflow flag is set then add the relative displacement to the program counter to cause a branch to a new location.
+uint8_t CPU::BVS() {
+  if (getFlag(V)) {
+    global_cycle++;
+
+    abs_addr = PC + rel_addr;
+
+    if ((PC & 0xFF00) ^ (abs_addr & 0xFF00)) global_cycle++;
+
+    PC = abs_addr;
+  }
+
+  return 0;
+}
+
+
+// Set the carry flag to zero.
+uint8_t CPU::CLC() {
+  setFlag(C, false);
+
+  return 0;
+}
+
+// Sets the decimal mode flag to zero.
+uint8_t CPU::CLD() {
+  setFlag(D, false);
+
+  return 0;
+}
+
+// Clears the interrupt disable flag allowing normal interrupt requests to be serviced.
+uint8_t CPU::CLI() {
+  setFlag(I, false);
+
+  return 0;
+}
+
+// Clears the overflow flag.
+uint8_t CPU::CLV() {
+  setFlag(V, false);
+
+  return 0;
+}
+
+// This instruction compares the contents of the accumulator with another memory held value and sets the zero and carry flags as appropriate.
+uint8_t CPU::CMP() {
+  temp = (uint16_t)A - (uint16_t)fetched_val;
+
+  setFlag(C, A >= fetched_val);
+  
+  setFlag(Z, A == fetched_val);
+
+  setFlag(N, 0x0080 & temp);
+
+  return 1;
+}
+
+// This instruction compares the contents of the X register with another memory held value and sets the zero and carry flags as appropriate.
+uint8_t CPU::CPX() {
+  temp = (uint16_t)X - (uint16_t)fetched_val;
+
+  setFlag(C, X >= fetched_val);
+  
+  setFlag(Z, X == fetched_val);
+
+  setFlag(N, 0x0080 & temp);
+
+  return 0;
+}
+
+// This instruction compares the contents of the Y register with another memory held value and sets the zero and carry flags as appropriate.
+uint8_t CPU::CPY() {
+  temp = (uint16_t)Y - (uint16_t)fetched_val;
+
+  setFlag(C, Y >= fetched_val);
+  
+  setFlag(Z, Y == fetched_val);
+
+  setFlag(N, 0x0080 & temp);
+
+  return 0;
+}
+
+// Subtracts one from the value held at a specified memory location setting the zero and negative flags as appropriate.
+uint8_t CPU::DEC() {
+  temp = (fetched_val - 1) & 0x00FF;
+  write(abs_addr, temp);
+
+  setFlag(Z, !temp);
+
+  setFlag(N, temp & 0x0080);
+
+  return 0;
+}
+
+// Subtracts one from the X register setting the zero and negative flags as appropriate.
+uint8_t CPU::DEX() {
+  X--;
+
+  setFlag(Z, !X);
+
+  setFlag(N, X & 0x80);
+
+  return 0;
+}
+
+// Subtracts one from the Y register setting the zero and negative flags as appropriate.
+uint8_t CPU::DEY() {
+  Y--;
+
+  setFlag(Z, !X);
+
+  setFlag(N, X & 0x80);
+
+  return 0;
+}
+
+// An exclusive OR is performed, bit by bit, on the accumulator contents using the contents of a byte of memory.
+uint8_t CPU::EOR() {
+  A ^= fetched_val;
+
+  setFlag(Z, !A);
+
+  setFlag(N, A & 0x80);
+
+  return 1;
+}
