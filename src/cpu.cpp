@@ -49,36 +49,55 @@ uint8_t CPU::ADC() {
   */
 
   // Sum = A + operand + carry (read Carry bit from P)
-  uint16_t sum = (uint16_t)A + (uint16_t)fetched_val + (P & C ? 1 : 0);
+  temp = (uint16_t)A + (uint16_t)fetched_val + (P & C ? 1 : 0);
 
   // if res > uint8_t size, set carry bit, else set it to 0
-  setFlag(C, sum > 0xFF); // Set carry bit in P (since C is already 1 in struct)
+  setFlag(C, temp > 0xFF); // Set carry bit in P (since C is already 1 in struct)
 
-  uint8_t res = sum & 0xFF; // can use (uint8_t)sum, but conversion -> compiler decides, while rn we mark explicitly
+  temp &= 0xFF; // can use (uint8_t)sum, but conversion -> compiler decides, while rn we mark explicitly
 
   // set zero bit, if applicable
-  setFlag(Z, !res);
+  setFlag(Z, !temp);
 
   // set negative if last bit is set (Xxxxxxxx & 10000000 (0x80))
-  setFlag(N, res & 0x80);
+  setFlag(N, temp & 0x80);
 
   // set overflow if A and operand has same sign, but res has different -> overflow
-  bool cond = ((~(A ^ fetched_val)) & (A ^ res)) & 0x80;
-  setFlag(V, cond);
+  setFlag(V, (((~(A ^ fetched_val)) & (A ^ temp)) & 0x80));
 
-  A = res;
+  A = temp;
 
   return 1; // need 1 extra if page crossed (https://www.nesdev.org/obelisk-6502-guide/reference.html)
 }
 
 uint8_t CPU::AND() {
-  uint8_t res = A & fetched_val;
+  temp = A & fetched_val;
 
-  setFlag(Z, !res);
+  setFlag(Z, !temp);
 
-  setFlag(N, res & 0x80);
+  setFlag(N, temp & 0x80);
 
-  A = res;
+  A = temp;
 
   return 1;
+}
+
+uint8_t CPU::ASL() {
+  temp = (uint16_t)(fetched_val << 1);
+
+  setFlag(C, (temp & 0xFF00) > 0);
+
+  setFlag(Z, !(temp & 0x00FF));
+
+  setFlag(N, (temp & 0x0080));
+
+  // if Implicit mpde, store in accumulator, else in memory
+  if (instruction_set[opcode].addrmode == &CPU::IMP) A = temp & 0x00FF;
+  else write(abs_addr, (uint8_t)temp & 0x00FF);
+
+  return 0;
+}
+
+uint8_t CPU::BCC() {
+
 }

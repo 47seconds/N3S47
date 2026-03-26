@@ -48,6 +48,7 @@ public:
   uint8_t   opcode       = 0x00;
   uint8_t   cycles       = 0x00;
   uint64_t  global_cycle = 0x00000000;
+  uint16_t  temp         = 0x0000;  // for temp operations such as storing intermidieate values such as additions etc instead of repeated stack allocation
 
   // fetching values
   uint8_t   fetched_val  = 0x00;
@@ -59,7 +60,9 @@ public:
   CPU();
   ~CPU();
 
-  uint8_t fetch();
+  uint8_t fetch_operand();  // fetch operand/s from abs_address to fetched_val
+  void read(const uint16_t& addr, uint8_t& val);   // reading value from specified address to specified register/val
+  void write(const uint16_t& addr, uint8_t val);  // writing data to specified address with specified content (non referenced (&) as I will rather just pass by value here)
 
   // list of all opcodes (0x00 - 0xFF, 256 instructions), opcode itself corresponds to vector index
   std::vector<Instruction> instruction_set;
