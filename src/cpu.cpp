@@ -153,3 +153,101 @@ uint8_t CPU::BEQ() {
    return 0;
 }
 
+// This instructions is used to test if one or more bits are set in a target memory location. The mask pattern in A is ANDed with the value in memory to set or clear the zero flag, but the result is not kept. Bits 7 and 6 of the value from memory are copied into the N and V flags.
+uint8_t CPU::BIT() {
+  temp = A & fetched_val;
+
+  setFlag(Z, !(temp & 0x00FF));
+
+  setFlag(V, fetched_val & 0x40);
+
+  setFlag(N, fetched_val & 0x80);
+
+  return 0;
+}
+
+// If the negative flag is set then add the relative displacement to the program counter to cause a branch to a new location.
+uint8_t CPU::BMI() {
+  if (getFlag(N)) {
+    global_cycle++;
+
+    abs_addr = PC + rel_addr;
+
+    if ((PC & 0xFF00) ^ (abs_addr & 0xFF00)) global_cycle++;
+
+    PC = abs_addr;
+  }
+
+  return 0;
+}
+
+// If the zero flag is clear then add the relative displacement to the program counter to cause a branch to a new location.
+uint8_t CPU::BNE() {
+  if (!getFlag(Z)) {
+    global_cycle++;
+
+    abs_addr = PC + rel_addr;
+
+    if ((PC & 0xFF00) ^ (abs_addr & 0xFF00)) global_cycle++;
+
+    PC = abs_addr;
+  }
+
+  return 0;
+}
+
+// If the negative flag is clear then add the relative displacement to the program counter to cause a branch to a new location.
+uint8_t CPU::BPL() {
+  if (!getFlag(N)) {
+    global_cycle++;
+
+    abs_addr = PC + rel_addr;
+
+    if ((PC & 0xFF00) ^ (abs_addr & 0xFF00)) global_cycle++;
+
+    PC = abs_addr;
+  }
+
+  return 0;
+}
+
+// The BRK instruction forces the generation of an interrupt request. The program counter and processor status are pushed on the stack then the IRQ interrupt vector at $FFFE/F is loaded into the PC and the break flag in the status set to one.
+// Stack goal:
+// [ PC high ]
+// [ PC low  ]
+// [ status  ]
+
+uint8_t CPU::BRK() {
+  // BRK is a 1-byte instruction but 6502 treats it like 2-byte instruction internally (hence, skip 1 extra byte)
+  PC++;
+
+  // Push PC (high byte first)
+  temp = 0x0100 + SP;
+  write(temp, (PC >> 8) & 0x00FF);
+  SP--;
+
+  // Push PC (low byte after)
+  temp = 0x0100 + SP;
+  write(temp, PC & 0x00FF);
+  SP--;
+
+
+  setFlag(B, true); // as it is a BRK interrupt in progress
+  setFlag(O, true); // 5th (Unused bit) should always be set
+
+  // push status register
+  temp = 0x0100 + SP;
+  write(temp, P);
+  SP--;
+
+  setFlag(B, false);  // stack stores B = 1 copy now, but real CPU shouldn't have B = 1
+
+  setFlag(I, true);
+
+  // Laod IRQ interrupt in the PC from the 0xFFFE and 0xFFFF (little endian)
+  temp  = 0x00FF & read(0xFFFE);  // little endian (low byte first) (doing masking to make sure previous value of temp don't interfare) EDIT: fuck, assignment overwrites prev value of temp lmao, so kinda useless masking, but whatever~
+  temp |= (read(0xFFFF) << 8);    // high byte read and shift 8 bits and append low byte here
+  PC = temp;
+
+  return 0;
+}

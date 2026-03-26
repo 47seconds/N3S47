@@ -62,7 +62,7 @@ public:
   ~CPU();
 
   uint8_t fetch_operand();  // fetch operand/s from abs_address to fetched_val
-  void read(const uint16_t& addr, uint8_t& val);   // reading value from specified address to specified register/val
+  uint8_t read(const uint16_t& addr);   // reading value from specified address and returning it (as data will be uimt8_t, but temp is uint16_t, hance can't take uint8_t& val as param)
   void write(const uint16_t& addr, uint8_t val);  // writing data to specified address with specified content (non referenced (&) as I will rather just pass by value here)
 
   // list of all opcodes (0x00 - 0xFF, 256 instructions), opcode itself corresponds to vector index
