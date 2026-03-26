@@ -37,6 +37,7 @@ uint8_t CPU::getFlag(P_FLAGS f) {
 // Huge Thanks
 // https://www.nesdev.org/obelisk-6502-guide/reference.html
 
+// This instruction adds the contents of a memory location to the accumulator together with the carry bit. If overflow occurs the carry bit is set, this enables multiple byte addition to be performed.
 uint8_t CPU::ADC() {
   /*
     This instruction adds the contents of a memory location to the accumulator together with the carry bit. If overflow occurs the carry bit is set, this enables multiple byte addition to be performed.
@@ -74,6 +75,7 @@ uint8_t CPU::ADC() {
   return 1; // need 1 extra if page crossed (https://www.nesdev.org/obelisk-6502-guide/reference.html)
 }
 
+// A logical AND is performed, bit by bit, on the accumulator contents using the contents of a byte of memory.
 uint8_t CPU::AND() {
   temp = A & fetched_val;
 
@@ -86,6 +88,7 @@ uint8_t CPU::AND() {
   return 1;
 }
 
+// This operation shifts all the bits of the accumulator or memory contents one bit left. Bit 0 is set to 0 and bit 7 is placed in the carry flag. The effect of this operation is to multiply the memory contents by 2 (ignoring 2's complement considerations), setting the carry if the result will not fit in 8 bits.
 uint8_t CPU::ASL() {
   temp = (uint16_t)(fetched_val << 1);
 
@@ -102,14 +105,15 @@ uint8_t CPU::ASL() {
   return 0;
 }
 
-// Memory is divided into pages of 256 bytes
-// A page cross happens when the high byte of the address changes
+// This operation shifts all the bits of the accumulator or memory contents one bit left. Bit 0 is set to 0 and bit 7 is placed in the carry flag. The effect of this operation is to multiply the memory contents by 2 (ignoring 2's complement considerations), setting the carry if the result will not fit in 8 bits.
 uint8_t CPU::BCC() {
   if (!getFlag(C)) {
     global_cycle++;
 
     abs_addr = PC + rel_addr;
 
+    // Memory is divided into pages of 256 bytes
+    // A page cross happens when the high byte of the address changes
     // old high bits of abs_addr (PC) and new abs_addr have changed -> page changed
     if ((PC & 0xFF00) ^ (abs_addr & 0xFF00)) global_cycle++;
 
@@ -118,3 +122,34 @@ uint8_t CPU::BCC() {
 
   return 0;
 }
+
+// If the carry flag is clear then add the relative displacement to the program counter to cause a branch to a new location.
+uint8_t CPU::BCS() {
+  if (getFlag(C)) {
+    global_cycle++;
+
+    abs_addr = PC + rel_addr;
+
+    if ((PC & 0xFF00) ^ (abs_addr & 0xFF00)) global_cycle++;
+
+    PC = abs_addr;
+  }
+
+  return 0;
+}
+
+// If the zero flag is set then add the relative displacement to the program counter to cause a branch to a new location.
+uint8_t CPU::BEQ() {
+  if (getFlag(Z)) {
+    global_cycle++;
+
+    abs_addr = PC + rel_addr;
+
+    if ((PC & 0xFF00) ^ (abs_addr & 0xFF00)) global_cycle++;
+
+    PC = abs_addr;
+  }
+
+   return 0;
+}
+
