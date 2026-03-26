@@ -1,7 +1,7 @@
 The NES Emulation in C++ by 47seconds
 
 # Discretion
-No AI is used for documenting the code and readme. Everything is either written by me, or referenced from below resources directly
+No AI is used for documenting the code or readme. Everything is either written by me, or referenced from below resources directly.
 Minimal use of AI is used, mostly for guiding, references, and syntax validation. Code is written by me reading references, documentation, as well as referencing OLC's NES implementation
 
 # Resources
