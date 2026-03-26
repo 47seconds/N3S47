@@ -6,6 +6,9 @@ void CPU::setFlag(P_FLAGS f, bool cond) {
   else P &= ~f;
 }
 
+// Huge Thanks
+// https://www.nesdev.org/obelisk-6502-guide/reference.html
+
 uint8_t CPU::ADC() {
   /*
     This instruction adds the contents of a memory location to the accumulator together with the carry bit. If overflow occurs the carry bit is set, this enables multiple byte addition to be performed.
