@@ -1,6 +1,5 @@
 #include "../include/cpu.hpp"
 #include <cstdint>
-#include <istream>
 #include <vector>
 
 CPU::CPU() {
