@@ -641,3 +641,50 @@ uint8_t CPU::RTS() {
   return 0;
 }
 
+// This instruction subtracts the contents of a memory location to the accumulator together with the not of the carry bit. If overflow occurs the carry bit is clear, this enables multiple byte subtraction to be performed.
+uint8_t CPU::SBC() {
+  return 1;
+}
+
+// Set the carry flag to one.
+uint8_t CPU::SEC() {
+  setFlag(C, true);
+
+  return 0;
+}
+
+// Set the decimal mode flag to one.
+uint8_t CPU::SED() {
+  setFlag(D, true);
+
+  return 0;
+}
+
+// Set the interrupt disable flag to one.
+uint8_t CPU::SEI() {
+  setFlag(I, true);
+
+  return 0;
+}
+
+// Stores the contents of the accumulator into memory.
+uint8_t CPU::STA() {
+  write(abs_addr, A);
+  
+  return 0;
+}
+
+// Stores the contents of the X register into memory.
+uint8_t CPU::STX() {
+  write(abs_addr, X);
+  
+  return 0;
+}
+
+// Stores the contents of the Y register into memory.
+uint8_t CPU::STY() {
+  write(abs_addr, Y);
+  
+  return 0;
+}
+
