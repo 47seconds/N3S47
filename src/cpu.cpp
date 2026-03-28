@@ -777,3 +777,7 @@ uint8_t CPU::TYA() {
   return 0;
 }
 
+// capture illegal opcode
+uint8_t CPU::XXX() {
+  return -1;
+}
