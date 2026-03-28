@@ -1,5 +1,6 @@
 #include "../include/cpu.hpp"
 #include <cstdint>
+#include <istream>
 #include <vector>
 
 CPU::CPU() {
@@ -213,9 +214,9 @@ uint8_t CPU::BPL() {
 
 // The BRK instruction forces the generation of an interrupt request. The program counter and processor status are pushed on the stack then the IRQ interrupt vector at $FFFE/F is loaded into the PC and the break flag in the status set to one.
 // Stack goal:
-// [ PC high ]
-// [ PC low  ]
 // [ status  ]
+// [ PC low  ]
+// [ PC high ]
 
 uint8_t CPU::BRK() {
   // BRK is a 1-byte instruction but 6502 treats it like 2-byte instruction internally (hence, skip 1 extra byte)
@@ -394,3 +395,250 @@ uint8_t CPU::EOR() {
 
   return 1;
 }
+
+// Adds one to the value held at a specified memory location setting the zero and negative flags as appropriate.
+uint8_t CPU::INC() {
+  fetched_val++;
+
+  setFlag(Z, !fetched_val);
+  
+  setFlag(N, fetched_val & 0x80);
+
+  write(abs_addr, fetched_val);
+
+  return 0;
+}
+
+// Adds one to the X register setting the zero and negative flags as appropriate.
+uint8_t CPU::INX() {
+  X++;
+
+  setFlag(Z, !X);
+  
+  setFlag(N, X & 0x80);
+
+  return 0;
+}
+
+// Adds one to the Y register setting the zero and negative flags as appropriate.
+uint8_t CPU::INY() {
+  Y++;
+
+  setFlag(Z, !Y);
+  
+  setFlag(N, Y & 0x80);
+
+  return 0;
+}
+
+// Sets the program counter to the address specified by the operand.
+uint8_t CPU::JMP() {
+  // An original 6502 has does not correctly fetch the target address if the indirect vector falls on a page boundary (e.g. $xxFF where xx is any value from $00 to $FF). In this case fetches the LSB from $xxFF as expected but takes the MSB from $xx00. This is fixed in some later chips like the 65SC02 so for compatibility always ensure the indirect vector is not at the end of the page.
+  PC = abs_addr; // forgot that abs_addr will hold the address specified by the operand
+  return 0;
+}
+
+// The JSR instruction pushes the address (minus one) of the return point on to the stack and then sets the program counter to the target memory address. (in short, jump to sub-routine (funtion calling))
+uint8_t CPU::JSR() {
+  PC--;
+
+  temp = 0x0100 + SP;
+  write(temp, (PC >> 8) & 0x00FF);
+  SP--;
+  temp = 0x100 + SP;
+  write(temp, PC & 0x00FF);
+  SP--;
+
+  PC = abs_addr;
+
+  return 0;
+}
+
+// Loads a byte of memory into the accumulator setting the zero and negative flags as appropriate.
+uint8_t CPU::LDA() {
+  A = fetched_val;
+
+  setFlag(Z, !A);
+
+  setFlag(N, A & 0x80);
+
+  return 1;
+}
+
+// Loads a byte of memory into the X register setting the zero and negative flags as appropriate.
+uint8_t CPU::LDX() {
+  X = fetched_val;
+
+  setFlag(Z, !X);
+
+  setFlag(N, X & 0x80);
+
+  return 1;
+}
+
+// Loads a byte of memory into the Y register setting the zero and negative flags as appropriate.
+uint8_t CPU::LDY() {
+  Y = fetched_val;
+
+  setFlag(Z, !Y);
+
+  setFlag(N, Y & 0x80);
+
+  return 1;
+}
+
+// Each of the bits in A or M is shift one place to the right. The bit that was in bit 0 is shifted into the carry flag. Bit 7 is set to zero.
+uint8_t CPU::LSR() {
+  setFlag(C, fetched_val & 0x01);
+
+  fetched_val >>= 1;
+  
+  setFlag(Z, !fetched_val);
+
+  setFlag(N, fetched_val & 0x80);
+
+  if (instruction_set[opcode].addrmode == &CPU::IMP) A = fetched_val;
+  else write(abs_addr, fetched_val);
+
+  return 0;
+}
+
+// The NOP instruction causes no changes to the processor other than the normal incrementing of the program counter to the next instruction.
+uint8_t CPU::NOP() {
+  return 0;
+}
+
+// An inclusive OR is performed, bit by bit, on the accumulator contents using the contents of a byte of memory.
+uint8_t CPU::ORA() {
+  A |= fetched_val;
+
+  setFlag(Z, !A);
+
+  setFlag(N, A & 0x80);
+
+  return 1;
+}
+
+// Pushes a copy of the accumulator on to the stack.
+uint8_t CPU::PHA() {
+  temp = 0x0100 + SP;
+  write(temp, A);
+  SP--;
+
+  return 0;
+}
+
+// Pushes a copy of the status flags on to the stack.
+uint8_t CPU::PHP() {
+  temp = 0x0100 + SP;
+  write(temp, P | B | O); // hardware behaviour: When pushing to stack, CPU injects values for B and U
+  SP--;
+
+  setFlag(B, false);  // same as in BRK, B is not a real persistent flag
+
+  return 0;
+}
+
+// Pulls an 8 bit value from the stack and into the accumulator. The zero and negative flags are set as appropriate.
+uint8_t CPU::PLA() {
+  SP++;
+  temp = 0x0100 + SP;
+  A = read(temp);
+
+  setFlag(Z, !A);
+
+  setFlag(N, A & 0x80);
+
+  return 0;
+}
+
+// Pulls an 8 bit value from the stack and into the processor flags. The flags will take on new states as determined by the value pulled.
+uint8_t CPU::PLP() {
+  SP++;
+  temp = 0x0100 + SP;
+  P = read(temp);
+
+  setFlag(O, true); // always 1
+
+  return 0;
+}
+
+// Move each of the bits in either A or M one place to the left. Bit 0 is filled with the current value of the carry flag whilst the old bit 7 becomes the new carry flag value.
+uint8_t CPU::ROL() {
+  temp = (uint16_t)(fetched_val & 0x80);
+
+  fetched_val <<= 1;
+  fetched_val |= getFlag(C);  // set the 1st bit with Carry
+  
+  setFlag(C, (temp >> 7) & 1);
+
+  setFlag(Z, !fetched_val);
+
+  setFlag(N, fetched_val & 0x80);
+
+  if (instruction_set[opcode].addrmode == &CPU::IMP) A = fetched_val;
+  else write(abs_addr, fetched_val);
+
+  return 0;
+}
+
+// Move each of the bits in either A or M one place to the right. Bit 7 is filled with the current value of the carry flag whilst the old bit 0 becomes the new carry flag value.
+uint8_t CPU::ROR() {
+  temp = (uint16_t)(fetched_val & 0x01);
+
+  fetched_val >>= 1;
+  fetched_val |= (getFlag(C) << 7);  // set the 7th bit with carry
+  
+  setFlag(C, temp & 1);
+
+  setFlag(Z, !fetched_val);
+
+  setFlag(N, fetched_val & 0x80);
+
+  if (instruction_set[opcode].addrmode == &CPU::IMP) A = fetched_val;
+  else write(abs_addr, fetched_val);
+
+  return 0;
+}
+
+// The RTI instruction is used at the end of an interrupt processing routine. It pulls the processor flags from the stack followed by the program counter.
+uint8_t CPU::RTI() {
+  // status
+  SP++;
+  temp = 0x0100 + SP;
+  P = read(temp);
+
+  setFlag(B, false);  // returning (poping) from interrupt
+  
+  setFlag(O, true);
+
+  // low byte
+  SP++;
+  temp = 0x0100 + SP;
+  PC = (uint16_t)read(temp) & 0x00FF;
+
+  // high byte
+  SP++;
+  temp = 0x0100 + SP;
+  PC |= (uint16_t)(read(temp)) << 8;
+
+  return 0;
+}
+
+// The RTS instruction is used at the end of a subroutine to return to the calling routine. It pulls the program counter (minus one) from the stack.
+uint8_t CPU::RTS() {
+  // low byte
+  SP++;
+  temp = 0x0100 + SP;
+  PC = (uint16_t)read(temp) & 0x00FF;
+
+  // high byte
+  SP++;
+  temp = 0x0100 + SP;
+  PC |= (uint16_t)(read(temp)) << 8;
+
+  PC++;
+
+  return 0;
+}
+

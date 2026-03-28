@@ -50,7 +50,7 @@ public:
   uint64_t  global_cycle = 0x00000000;
   uint16_t  temp         = 0x0000;  // for temp operations such as storing intermidieate values such as additions etc instead of repeated stack allocation
 
-  // fetching values
+  // fetching (operand's) values
   uint8_t   fetched_val  = 0x00;
 
 private:
