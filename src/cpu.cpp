@@ -643,6 +643,29 @@ uint8_t CPU::RTS() {
 
 // This instruction subtracts the contents of a memory location to the accumulator together with the not of the carry bit. If overflow occurs the carry bit is clear, this enables multiple byte subtraction to be performed.
 uint8_t CPU::SBC() {
+  // A = A - m - (1 - C, c = 0, borrow occured, else not)
+  // A = A + (~M) + C
+  // ~M = (255 - M)   // for 8-bit
+  // ~M + 1 = 256 - M -> -(M) = ~M + 1   (mod 256)
+  // 1 ^ x = NOT x and 0 ^ x = x
+  temp = (uint16_t)(fetched_val) ^ 0x00FF;
+  uint16_t tempval = temp;
+  temp += (uint16_t)A + (uint16_t)getFlag(C);
+
+  // skip A assignment here, since need for oferflow detection
+
+  setFlag(C, temp & 0xFF00);
+
+  setFlag(Z, !(temp & 0x00FF));
+
+  // set overflow if A and operand has same sign, but res has different -> overflow
+  // Overflow = (result ^ A) & (result ^ value) & 0x80
+  setFlag(V, (temp & 0x00FF ^ A) & ((temp & 0x00FF) ^ tempval) & 0x80);
+
+  setFlag(N, temp & 0x0080);
+
+  A = (uint8_t)(temp & 0x00FF);
+
   return 1;
 }
 
@@ -685,6 +708,72 @@ uint8_t CPU::STX() {
 uint8_t CPU::STY() {
   write(abs_addr, Y);
   
+  return 0;
+}
+
+// Copies the current contents of the accumulator into the X register and sets the zero and negative flags as appropriate.
+uint8_t CPU::TAX() {
+  X = A;  
+
+  setFlag(Z, !X);
+
+  setFlag(N, X & 0x80);
+
+  return 0;
+}
+
+// Copies the current contents of the accumulator into the Y register and sets the zero and negative flags as appropriate.
+uint8_t CPU::TAY() {
+  Y = A;  
+
+  setFlag(Z, !Y);
+
+  setFlag(N, Y & 0x80);
+
+  return 0;
+}
+
+// Copies the current contents of the stack register into the X register and sets the zero and negative flags as appropriate.
+uint8_t CPU::TSX() {
+  X = SP;
+
+  setFlag(Z, !X);
+
+  setFlag(N, X & 0x80);
+
+  return 0;
+}
+
+// Copies the current contents of the X register into the accumulator and sets the zero and negative flags as appropriate.
+uint8_t CPU::TXA() {
+  A = X;
+
+  setFlag(Z, !A);
+
+  setFlag(N, A & 0x80);
+
+  return 0;
+}
+
+// Copies the current contents of the X register into the stack register.
+uint8_t CPU::TXS() {
+  SP = X;
+
+  setFlag(Z, !SP);
+
+  setFlag(N, SP & 0x80);
+
+  return 0;
+}
+
+// Copies the current contents of the Y register into the accumulator and sets the zero and negative flags as appropriate.
+uint8_t CPU::TYA() {
+  A = Y;
+
+  setFlag(Z, !A);
+
+  setFlag(N, A & 0x80);
+
   return 0;
 }
 
